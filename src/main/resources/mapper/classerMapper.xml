@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namepace可以理解为虚拟文件夹-->
+<mapper namespace="org.lanqiao.dao.IClassesDao">
+    <!--resultMap 结果映射-->
+    <select id="getAllClass" resultMap="classMap">
+        select * from class c,teacher t where c.teacher_id=t.teacher_id
+    </select>
+    <!--此处的classMap与上面select中的classMap形成对应-->
+    <!--type：返回值类型-->
+    <resultMap id="classMap" type="org.lanqiao.bean.Classes">
+        <!--提高查询性能-->
+        <id property="classId" column="class_id"/>
+        <result property="className" column="class_name"/>
+        <!--association:引入teacher对象，并描述映射关系-->
+        <!--javaType:指定类型-->
+        <association property="teacher" javaType="org.lanqiao.bean.Teacher">
+            <!--property:bean里面的属性名 column:对应表的字段名-->
+            <id property="teacherId" column="teacher_id"/>
+            <result property="teacherName" column="teacher_name"/>
+        </association>
+    </resultMap>
+
+    <!--根据班级id，查询班级所有学生的信息-->
+    <select id="getClassInfoById" resultMap="classMap2" parameterType="int">
+        select * from
+        class c,teacher t,student s
+        where c.teacher_id=t.teacher_id
+        and c.class_id=s.class_id
+        and c.class_id=#{classId}
+    </select>
+    <resultMap id="classMap2" type="org.lanqiao.bean.Classes">
+        <id property="classId" column="class_id"/>
+        <result property="className" column="class_name"/>
+        <association property="teacher" javaType="org.lanqiao.bean.Teacher">
+            <id property="teacherId" column="teacher_id"/>
+            <result property="teacherName" column="teacher_name"/>
+        </association>
+        <!--引入学生集合，并且描述映射关系  collection代表集合  ofType:集合类型-->
+        <collection property="student" ofType="org.lanqiao.bean.Student">
+            <id property="studentId" column="student_id"/>
+            <result property="studentName" column="student_name"/>
+        </collection>
+    </resultMap>
+</mapper>
